@@ -1,3 +1,3 @@
-funcrion run () {
+function run () {
   return 'run'
 }
