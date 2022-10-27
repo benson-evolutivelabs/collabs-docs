@@ -1,1 +1,190 @@
+const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?$/
 
+function prompt (title, content) {
+  const ui = SpreadsheetApp.getUi();
+  return ui.prompt(title, content, ui.ButtonSet.YES_NO);
+}
+
+function showSideBar (content, title) {
+  const html = HtmlService.createHtmlOutput(content).setTitle(title || '');
+  SpreadsheetApp.getUi().showSidebar(html);
+}
+
+function alert (str) {
+  SpreadsheetApp.getUi().alert(str);
+}
+
+function toast (str) {
+  if (typeof str === 'object') {
+    SpreadsheetApp.getActiveSpreadsheet().toast(JSON.stringify(str));
+  } else {
+    SpreadsheetApp.getActiveSpreadsheet().toast(str);
+  }
+}
+
+// 輸入的欄位英文（Q, S, AA）變成橫向欄位數字（0 開始算起）
+function charToNumber (word) {
+  word = word.toUpperCase();
+  if (!/^[A-Z]{1,2}$/.test(word)) {
+    alert(`charToNumber input word ${word} error`);
+    return null;
+  }
+
+  let number = 0;
+  const list = word.split('').map(number => number.charCodeAt() - 64);
+  number += list.pop();
+  if (list.length === 0) {
+    return number - 1;
+  }
+
+  const currentItem = list[0];
+  number += currentItem * 26;
+  return number - 1;
+}
+
+function numberToChar (num) {
+  num += 1;
+  if (num > 26*27) {
+    alert('numberToChar input 超出可計算範圍');
+    return null;
+  }
+
+  let charString = '';
+  if (num > 26) {
+    charString = String.fromCharCode(Math.floor(num/26) + 64);
+  }
+  charString += String.fromCharCode(num%26 + 64);
+  return charString;
+}
+
+/**
+ * changingArea: /^[A-Z]{1,2}:[A-Z]{1,2}( [A-Z])?$/
+ * currentDocsKey: 'Customized' or 'Classic'
+ */
+function getDocumentData(changingArea, currentDocsKey) {
+  const inputSheetTag = 'Collabs - New Product & Packaging';
+  const SpreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+  const inputSheet = SpreadSheet.getSheetByName(inputSheetTag);
+  const [title, ...content] = inputSheet.getDataRange().getValues();
+
+  const startChar = changingArea.replace(changingAreaRegex, '$1');
+  const endChar = changingArea.replace(changingAreaRegex, '$2');
+  const otherChar = changingArea.replace(changingAreaRegex, '$3').trim();
+  const changingAreaStartIndex = charToNumber(startChar);
+  const changingAreaEndIndex = charToNumber(endChar);
+  if (changingAreaStartIndex === null || changingAreaEndIndex === null) {
+      alert(`執行終止！ 請輸入正確的變動範圍，現在變動範圍為（startChar: ${startChar}, endChar: ${endChar}）`);
+    return
+  }
+
+  const titleList = [title[1].trim(), title[2].trim(), title[3].trim(), title[4].trim(), title[5].trim()];
+  for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
+      titleList.push(title[i].trim());
+  }
+  if (otherChar) {
+    titleList.push(title[charToNumber(otherChar)].trim());
+  }
+
+  const errorMessages = [];
+  const data = content.filter(item => item[1].trim()).map((item, index) => {
+    const designCode = item[1].trim();
+    const collabName = item[2].trim();
+    const skuData = item[3].trim();
+    const item4 = item[4].trim();
+    const item5 = item[5].trim();
+    const classicOrCustomized = ['Customized', 'Classic'].includes(item4) ? item4 : null; // Classic or Customized
+    if (classicOrCustomized === null) {
+      errorMessages.push(`E${index+2} 欄位出現不正常字串: '${item4}'`);
+    }
+    const availableWebsites = item5 ? item5.split('-').map(item => item.trim().toUpperCase()).filter(item => item) : [];
+    if (availableWebsites.length === 0) {
+      errorMessages.push(`F${index+2} 欄位出現不正常字串: '${item5}'`);
+    }
+    const otherItem = otherChar ? item[charToNumber(otherChar)] : undefined
+
+    const changingArr = [];
+    for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
+      const currentItem = item[i].trim();
+      // TODO
+      const checkList = [/^OK to launch on \d{2}\/\d{2}$/, /^NOT OK to launch$/, /^NOT launching$/]
+      if (!checkList.some(item => item.test(currentItem))) {
+        errorMessages.push(`${numberToChar(i)}${index+2} 欄位出現不正常字串: '${currentItem}'`)
+      }
+      changingArr.push(currentItem);
+    }
+
+    return {
+      designCode,
+      collabName,
+      skuData,
+      classicOrCustomized,
+      availableWebsites,
+      changingArr,
+      otherItem,
+    }
+  }).filter(item => item.classicOrCustomized === currentDocsKey);
+
+  if (errorMessages.length > 0) {
+    showSideBar(errorMessages.join('<br />'))
+  }
+
+  const returnData = [];
+  for (const item of data) {
+    const findReturnDataIndex = returnData.findIndex(returnItem => {
+      return returnItem.designCode === item.designCode &&
+        returnItem.skuData === item.skuData &&
+        returnItem.changingArr.every((arrItem, index) => arrItem === item.changingArr[index]);
+    })
+
+    if (findReturnDataIndex >= 0) {
+      item.availableWebsites.forEach(websiteStr => {
+        returnData[findReturnDataIndex].availableWebsites.push(websiteStr);
+      });
+    } else {
+      returnData.push(item)
+    }
+  }
+
+  return { titleList, returnData }
+}
+
+function runITCollabScript () {
+  const ui = SpreadsheetApp.getUi();
+  const currentSheet = SpreadsheetApp.getActiveSheet();
+  const currentSheetName = currentSheet.getName().trim();
+  const allowSheetName = {
+    'IT - Customized Docs': 'Customized',
+    'IT - Classic Docs': 'Classic',
+  }
+  const currentDocsKey = allowSheetName[currentSheetName];
+  if (!currentDocsKey) {
+    alert(`執行終止！ 請在允許的表格 ${Object.keys(allowSheetName).map(item => `「${item}」`).join(', ')} 中執行`);
+    return;
+  }
+
+  const response = prompt('變動區域', '請輸入變動區域 比如: `Q:S`, `Q:Q`, `Q:S T`');
+  if (response.getSelectedButton() !== ui.Button.YES) {
+    return;
+  }
+
+  const changingArea = response.getResponseText().trim();
+  if (!changingArea || !changingAreaRegex.test(changingArea)) {
+    alert('執行終止！ 請在 A1 輸入正確的變動範圍參數\n\n比如: `Q:S`, `Q:Q`, `Q:S T`');
+    return;
+  }
+  
+  const { titleList, returnData } = getDocumentData(changingArea, currentDocsKey);
+  const outputData = [titleList];
+  for (const item of returnData) {
+    outputData.push([
+      item.designCode,
+      item.collabName,
+      item.skuData,
+      item.classicOrCustomized,
+      item.availableWebsites.join(' - '),
+      ...item.changingArr,
+      item.otherItem,
+    ])
+  }
+  currentSheet.getRange(1, 1, returnData.length + 1, titleList.length).setValues(outputData)
+}
