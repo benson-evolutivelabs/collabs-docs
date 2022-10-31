@@ -1,4 +1,5 @@
-const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?$/
+const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?$/;
+const localeSort = ['TW', 'JP', 'TH', 'ASIA', 'IO', 'EU', 'UK', 'FR', 'DE', 'ES'];
 
 function prompt (title, content) {
   const ui = SpreadsheetApp.getUi();
@@ -148,6 +149,20 @@ function getDocumentData(changingArea, currentDocsKey) {
   return { titleList, returnData }
 }
 
+function getCollabSort () {
+  const docs = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1GQ27CrIFffrXkTpFq9b1ILHkhp6J-4mFn7alDlaA8Fo/edit');
+  const sheet = docs.getSheetByName('分類 Categories');
+  const sourceData = sheet.getRange('B:C').getValues().filter((item, index) => item[1] && index !== 0);
+  const collabMap = {};
+  const collabSortList = [];
+  for (const [collabName, designCode] of sourceData) {
+    collabMap[designCode] = collabName;
+    collabSortList.push(designCode);
+  }
+
+  return { collabMap, collabSortList };
+}
+
 function runITCollabScript () {
   const ui = SpreadsheetApp.getUi();
   const currentSheet = SpreadsheetApp.getActiveSheet();
@@ -173,9 +188,31 @@ function runITCollabScript () {
     return;
   }
   
-  const { titleList, returnData } = getDocumentData(changingArea, currentDocsKey);
+  const { titleList, returnData: collabsData } = getDocumentData(changingArea, currentDocsKey);
+  const { collabMap, collabSortList } = getCollabSort();
+  const collabsSortData = collabsData.map(item => {
+    const newCollabName = collabMap[item.designCode];
+    if (newCollabName) {
+      item.collabName = newCollabName;
+    }
+    item.availableWebsites = item.availableWebsites.sort((a, b) => {
+      const getIndex = (item) => {
+        const index = localeSort.findIndex(locale => locale.includes(item));
+        return index === -1 ? 99 : index;
+      }
+      return getIndex(a) - getIndex(b);
+    })
+    return item;
+  }).sort((a, b) => {
+    const getIndex = (designCode) => {
+      return collabSortList.includes(designCode) ? collabSortList.indexOf(designCode) : 99999;
+    }
+
+    return getIndex(a.designCode) - getIndex(b.designCode);
+  });
+
   const outputData = [titleList];
-  for (const item of returnData) {
+  for (const item of collabsSortData) {
     outputData.push([
       item.designCode,
       item.collabName,
@@ -186,5 +223,5 @@ function runITCollabScript () {
       item.otherItem,
     ])
   }
-  currentSheet.getRange(1, 1, returnData.length + 1, titleList.length).setValues(outputData)
+  currentSheet.getRange(1, 1, collabsSortData.length + 1, titleList.length).setValues(outputData)
 }
