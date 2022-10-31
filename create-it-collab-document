@@ -152,10 +152,10 @@ function getDocumentData(changingArea, currentDocsKey) {
 function getCollabSort () {
   const docs = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1GQ27CrIFffrXkTpFq9b1ILHkhp6J-4mFn7alDlaA8Fo/edit');
   const sheet = docs.getSheetByName('分類 Categories');
-  const sourceData = sheet.getRange('B:C').getValues().filter((item, index) => item[1] && index !== 0);
+  const sourceData = sheet.getRange('A:C').getValues().filter((item, index) => item[2] && index !== 0);
   const collabMap = {};
   const collabSortList = [];
-  for (const [collabName, designCode] of sourceData) {
+  for (const [collabName, _handle, designCode] of sourceData) {
     collabMap[designCode] = collabName;
     collabSortList.push(designCode);
   }
