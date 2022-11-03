@@ -8,6 +8,11 @@ function getLocaleIndex (item) {
   return index === -1 ? 99 : index;
 }
 
+function getDate () {
+  const now = new Date();
+  return `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+}
+
 function prompt (title, content) {
   const ui = SpreadsheetApp.getUi();
   return ui.prompt(title, content, ui.ButtonSet.YES_NO);
@@ -216,6 +221,8 @@ function runITCollabScript () {
     return indexSortNumber;
   });
 
+  titleList.push(`last update: 
+${getDate()}`);
   const outputData = [titleList];
   for (const item of collabsSortData) {
     outputData.push([
