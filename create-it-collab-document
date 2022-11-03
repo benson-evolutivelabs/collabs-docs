@@ -1,5 +1,12 @@
 const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?$/;
 const localeSort = ['TW', 'JP', 'TH', 'ASIA', 'IO', 'EU', 'UK', 'FR', 'DE', 'ES'];
+function getLocaleIndex (item) {
+  if (!item) {
+    return 99;
+  }
+  const index = localeSort.findIndex(locale => item.includes(locale));
+  return index === -1 ? 99 : index;
+}
 
 function prompt (title, content) {
   const ui = SpreadsheetApp.getUi();
@@ -195,20 +202,18 @@ function runITCollabScript () {
     if (newCollabName) {
       item.collabName = newCollabName;
     }
-    item.availableWebsites = item.availableWebsites.sort((a, b) => {
-      const getIndex = (item) => {
-        const index = localeSort.findIndex(locale => locale.includes(item));
-        return index === -1 ? 99 : index;
-      }
-      return getIndex(a) - getIndex(b);
-    })
+    item.availableWebsites = item.availableWebsites.sort((a, b) => getLocaleIndex(a) - getLocaleIndex(b));
     return item;
   }).sort((a, b) => {
     const getIndex = (designCode) => {
       return collabSortList.includes(designCode) ? collabSortList.indexOf(designCode) : 99999;
     }
 
-    return getIndex(a.designCode) - getIndex(b.designCode);
+    let indexSortNumber = getIndex(a.designCode) - getIndex(b.designCode);
+    if (indexSortNumber === 0) {
+      indexSortNumber = getLocaleIndex(a.availableWebsites[0]) - getLocaleIndex(b.availableWebsites[0]);
+    }
+    return indexSortNumber;
   });
 
   const outputData = [titleList];
