@@ -1,4 +1,4 @@
-const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?( \d*)$/;
+const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?( \d+)$/;
 const localeSort = ['TW', 'JP', 'TH', 'ASIA', 'IO', 'EU', 'UK', 'FR', 'DE', 'ES'];
 function getLocaleIndex (item) {
   if (!item) {
