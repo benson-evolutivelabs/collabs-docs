@@ -1,4 +1,4 @@
-const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?$/;
+const changingAreaRegex = /^([A-Z]{1,2}):([A-Z]{1,2})( [A-Z])?( \d*)$/;
 const localeSort = ['TW', 'JP', 'TH', 'ASIA', 'IO', 'EU', 'UK', 'FR', 'DE', 'ES'];
 function getLocaleIndex (item) {
   if (!item) {
@@ -178,6 +178,7 @@ function getCollabSort () {
 function runITCollabScript () {
   const ui = SpreadsheetApp.getUi();
   const currentSheet = SpreadsheetApp.getActiveSheet();
+  const password = currentSheet.getSheetId().toString();
   const currentSheetName = currentSheet.getName().trim();
   const allowSheetName = {
     'IT - Customized Docs': 'Customized',
@@ -189,14 +190,20 @@ function runITCollabScript () {
     return;
   }
 
-  const response = prompt('變動區域', '請輸入變動區域 比如: `Q:S`, `Q:Q`, `Q:S T`');
+  const response = prompt('變動區域', '請輸入變動區域 比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
   if (response.getSelectedButton() !== ui.Button.YES) {
     return;
   }
 
   const changingArea = response.getResponseText().trim();
   if (!changingArea || !changingAreaRegex.test(changingArea)) {
-    alert('執行終止！ 請在 A1 輸入正確的變動範圍參數\n\n比如: `Q:S`, `Q:Q`, `Q:S T`');
+    alert('執行終止！ 請在 A1 輸入正確的變動範圍參數\n\n比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
+    return;
+  }
+  const inputArray = changingArea.split(' ')
+  const inputPassword = inputArray[inputArray.length - 1];
+  if(inputPassword !== password) {
+    alert('執行終止！ 請在 A1 輸入正確的變動範圍參數\n\n比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
     return;
   }
   
