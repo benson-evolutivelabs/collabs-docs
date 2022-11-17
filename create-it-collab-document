@@ -240,6 +240,7 @@ ${getDate()}`);
       item.availableWebsites.join(' - '),
       ...item.changingArr,
       item.otherItem,
+      '',
     ])
   }
   currentSheet.getRange(1, 1, collabsSortData.length + 1, titleList.length).setValues(outputData)
