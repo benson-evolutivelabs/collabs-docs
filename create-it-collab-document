@@ -197,13 +197,13 @@ function runITCollabScript () {
 
   const changingArea = response.getResponseText().trim();
   if (!changingArea || !changingAreaRegex.test(changingArea)) {
-    alert('執行終止！ 請在 A1 輸入正確的變動範圍參數\n\n比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
+    alert('執行終止！ 請輸入正確的變動範圍參數\n\n比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
     return;
   }
   const inputArray = changingArea.split(' ')
   const inputPassword = inputArray[inputArray.length - 1];
   if(inputPassword !== password) {
-    alert('執行終止！ 請在 A1 輸入正確的變動範圍參數\n\n比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
+    alert('執行終止！ 請輸入正確的變動範圍參數\n\n比如: `Q:S pw`, `Q:Q pw`, `Q:S T pw`');
     return;
   }
   
