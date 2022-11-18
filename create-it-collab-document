@@ -159,7 +159,7 @@ function getDocumentData(changingArea, currentDocsKey) {
         returnData[findReturnDataIndex].otherItem = `${returnData[findReturnDataIndex].otherItem}
 ${item.otherItem}`
       }
-      returnData[findReturnDataIndex].rows += `, ${item.rows}`
+      returnData[findReturnDataIndex].rows += `. ${item.rows}`
     } else {
       returnData.push(item)
     }
