@@ -83,6 +83,7 @@ function getDocumentData(changingArea, currentDocsKey) {
   const startChar = changingArea.replace(changingAreaRegex, '$1');
   const endChar = changingArea.replace(changingAreaRegex, '$2');
   const otherChar = changingArea.replace(changingAreaRegex, '$3').trim();
+  const haveOtherItem = otherChar !== ''
   const changingAreaStartIndex = charToNumber(startChar);
   const changingAreaEndIndex = charToNumber(endChar);
   if (changingAreaStartIndex === null || changingAreaEndIndex === null) {
@@ -153,6 +154,10 @@ function getDocumentData(changingArea, currentDocsKey) {
       item.availableWebsites.forEach(websiteStr => {
         returnData[findReturnDataIndex].availableWebsites.push(websiteStr);
       });
+      if (haveOtherItem) {
+        item.otherItem = `${item.otherItem}
+        ${returnData[findReturnDataIndex].otherItem}`
+      }
     } else {
       returnData.push(item)
     }
