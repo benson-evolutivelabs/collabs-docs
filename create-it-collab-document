@@ -141,7 +141,7 @@ function getDocumentData(changingArea, currentDocsKey) {
       availableWebsites,
       changingArr,
       otherItem,
-      lineNumber: index+2,
+      rowNumber: index+2,
     }
   }).filter(item => item.classicOrCustomized === currentDocsKey);
 
@@ -165,11 +165,11 @@ function getDocumentData(changingArea, currentDocsKey) {
         returnData[findReturnDataIndex].otherItem = `${returnData[findReturnDataIndex].otherItem}
 ${item.otherItem}`
       }
-      returnData[findReturnDataIndex].lineNumber += `, ${item.lineNumber}`
+      returnData[findReturnDataIndex].rowNumber += `, ${item.rowNumber}`
     } else {
       returnData.push({
         ...item,
-        lineNumber: `line ${item.lineNumber}`
+        rowNumber: `row ${item.rowNumber}`
       })
     }
   }
@@ -259,7 +259,7 @@ ${getDate()}`);
       item.availableWebsites.join(' - '),
       ...item.changingArr,
       item.otherItem,
-      item.lineNumber,
+      item.rowNumber,
       '',
     ])
   }
