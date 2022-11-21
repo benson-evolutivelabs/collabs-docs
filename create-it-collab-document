@@ -76,6 +76,14 @@ function numberToChar (num) {
   return charString;
 }
 
+function abnormalString (field, item) {
+  if (item) {
+    return `${field} 欄位出現不正常字串: '${item4}'`;
+  } else {
+    return `${field} 欄位是空白`;
+  }
+}
+
 /**
  * changingArea: /^[A-Z]{1,2}:[A-Z]{1,2}( [A-Z])?$/
  * currentDocsKey: 'Customized' or 'Classic'
@@ -107,18 +115,21 @@ function getDocumentData(changingArea, currentDocsKey) {
 
   const errorMessages = [];
   const data = content.filter(item => item[1].trim()).map((item, index) => {
-    const designCode = item[1].trim();
+    const designCode = item[1].trim().toUpperCase();
+    if (!/^[A-Z]{2,3}$/.test(designCode)) {
+      errorMessages.push(abnormalString(`B${index+2}`, designCode));
+    }
     const collabName = item[2].trim();
     const skuData = item[3].trim().toUpperCase();
     const item4 = item[4].trim();
-    const item5 = item[5].trim();
     const classicOrCustomized = ['Customized', 'Classic'].includes(item4) ? item4 : null; // Classic or Customized
     if (classicOrCustomized === null) {
-      errorMessages.push(`E${index+2} 欄位出現不正常字串: '${item4}'`);
+      errorMessages.push(abnormalString(`E${index+2}`, item4));
     }
+    const item5 = item[5].trim();
     const availableWebsites = item5 ? item5.split('-').map(item => item.trim().toUpperCase()).filter(item => item) : [];
     if (availableWebsites.length === 0) {
-      errorMessages.push(`F${index+2} 欄位出現不正常字串: '${item5}'`);
+      errorMessages.push(abnormalString(`F${index+2}`, item5));
     }
     const otherItem = otherChar ? item[charToNumber(otherChar)] : undefined
 
@@ -128,7 +139,7 @@ function getDocumentData(changingArea, currentDocsKey) {
       // TODO
       const checkList = [/^OK to launch on \d{2}\/\d{2}$/, /^NOT OK to launch$/, /^NOT launching$/]
       if (!checkList.some(item => item.test(currentItem))) {
-        errorMessages.push(`${numberToChar(i)}${index+2} 欄位出現不正常字串: '${currentItem}'`)
+        errorMessages.push(abnormalString(`${numberToChar(i)}${index+2}`, currentItem));
       }
       changingArr.push(currentItem);
     }
