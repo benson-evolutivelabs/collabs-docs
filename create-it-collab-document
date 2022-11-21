@@ -78,7 +78,7 @@ function numberToChar (num) {
 
 function abnormalString (field, item) {
   if (item) {
-    return `${field} 欄位出現不正常字串: '${item4}'`;
+    return `${field} 欄位出現不正常字串: '${item}'`;
   } else {
     return `${field} 欄位是空白`;
   }
