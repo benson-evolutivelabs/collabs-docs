@@ -141,7 +141,7 @@ function getDocumentData(changingArea, currentDocsKey) {
       availableWebsites,
       changingArr,
       otherItem,
-      rows: index+2,
+      lineNumber: index+2,
     }
   }).filter(item => item.classicOrCustomized === currentDocsKey);
 
@@ -165,9 +165,12 @@ function getDocumentData(changingArea, currentDocsKey) {
         returnData[findReturnDataIndex].otherItem = `${returnData[findReturnDataIndex].otherItem}
 ${item.otherItem}`
       }
-      returnData[findReturnDataIndex].rows += `. ${item.rows}`
+      returnData[findReturnDataIndex].lineNumber += `, ${item.lineNumber}`
     } else {
-      returnData.push(item)
+      returnData.push({
+        ...item,
+        lineNumber: `line ${item.lineNumber}`
+      })
     }
   }
 
@@ -243,7 +246,7 @@ function runITCollabScript () {
     return indexSortNumber;
   });
 
-  titleList.push('合併行數')
+  titleList.push('來源')
   titleList.push(`last update: 
 ${getDate()}`);
   const outputData = [titleList];
@@ -256,7 +259,7 @@ ${getDate()}`);
       item.availableWebsites.join(' - '),
       ...item.changingArr,
       item.otherItem,
-      item.rows,
+      item.lineNumber,
       '',
     ])
   }
