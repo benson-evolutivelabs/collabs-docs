@@ -205,6 +205,7 @@ function getCollabSort () {
 function runITCollabScript () {
   const ui = SpreadsheetApp.getUi();
   const currentSheet = SpreadsheetApp.getActiveSheet();
+  currentSheet.clear({ formatOnly: true, contentsOnly: true });
   const password = currentSheet.getSheetId().toString();
   const currentSheetName = currentSheet.getName().trim();
   const allowSheetName = {
