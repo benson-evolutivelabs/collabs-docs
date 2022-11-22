@@ -172,9 +172,9 @@ function getDocumentData(changingArea, currentDocsKey) {
       item.availableWebsites.forEach(websiteStr => {
         returnData[findReturnDataIndex].availableWebsites.push(websiteStr);
       });
-      if (haveOtherItem) {
-        returnData[findReturnDataIndex].otherItem = `${returnData[findReturnDataIndex].otherItem}
-${item.otherItem}`
+      if (haveOtherItem && item.otherItem) {
+        returnData[findReturnDataIndex].otherItem = returnData[findReturnDataIndex].otherItem ? `${returnData[findReturnDataIndex].otherItem}
+${item.otherItem}` : item.otherItem
       }
       returnData[findReturnDataIndex].rowNumber += `, ${item.rowNumber}`
     } else {
