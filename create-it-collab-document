@@ -92,7 +92,7 @@ function getDocumentData(changingArea, currentDocsKey) {
   const inputSheetTag = 'Collabs - New Product & Packaging';
   const SpreadSheet = SpreadsheetApp.getActiveSpreadsheet();
   const inputSheet = SpreadSheet.getSheetByName(inputSheetTag);
-  const [title, ...content] = inputSheet.getDataRange().getValues();
+  const [title, _example, ...content] = inputSheet.getDataRange().getValues();
 
   const startChar = changingArea.replace(changingAreaRegex, '$1');
   const endChar = changingArea.replace(changingAreaRegex, '$2');
@@ -124,12 +124,12 @@ function getDocumentData(changingArea, currentDocsKey) {
     const item4 = item[4].trim();
     const classicOrCustomized = ['Customized', 'Classic'].includes(item4) ? item4 : null; // Classic or Customized
     if (classicOrCustomized === null) {
-      errorMessages.push(abnormalString(`E${index+2}`, item4));
+      errorMessages.push(abnormalString(`E${index+3}`, item4));
     }
     const item5 = item[5].trim();
     const availableWebsites = item5 ? item5.split('-').map(item => item.trim().toUpperCase()).filter(item => item) : [];
     if (availableWebsites.length === 0) {
-      errorMessages.push(abnormalString(`F${index+2}`, item5));
+      errorMessages.push(abnormalString(`F${index+3}`, item5));
     }
     const otherItem = otherChar ? item[charToNumber(otherChar)] : undefined
 
@@ -139,7 +139,7 @@ function getDocumentData(changingArea, currentDocsKey) {
       // TODO
       const checkList = [/^OK to launch on \d{2}\/\d{2}$/, /^NOT OK to launch$/, /^NOT launching$/]
       if (!checkList.some(item => item.test(currentItem))) {
-        errorMessages.push(abnormalString(`${numberToChar(i)}${index+2}`, currentItem));
+        errorMessages.push(abnormalString(`${numberToChar(i)}${index+3}`, currentItem));
       }
       changingArr.push(currentItem);
     }
@@ -152,7 +152,7 @@ function getDocumentData(changingArea, currentDocsKey) {
       availableWebsites,
       changingArr,
       otherItem,
-      rowNumber: index+2,
+      rowNumber: index+3,
     }
   }).filter(item => item.classicOrCustomized === currentDocsKey);
 
