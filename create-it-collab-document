@@ -137,7 +137,7 @@ function getDocumentData(changingArea, currentDocsKey) {
     for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
       const currentItem = item[i].trim();
       // TODO
-      const checkList = [/^OK to launch on \d{2}\/\d{2}$/, /^NOT OK to launch$/, /^NOT launching$/]
+      const checkList = [/^OK to launch on \d{1,2}\/\d{1,2}$/, /^NOT OK to launch$/, /^NOT launching$/]
       if (!checkList.some(item => item.test(currentItem))) {
         errorMessages.push(abnormalString(`${numberToChar(i)}${index+3}`, currentItem));
       }
