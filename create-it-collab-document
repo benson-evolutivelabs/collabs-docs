@@ -262,17 +262,20 @@ function runITCollabScript () {
 ${getDate()}`);
   const outputData = [titleList];
   for (const item of collabsSortData) {
-    outputData.push([
+    const obj = [
       item.designCode,
       item.collabName,
       item.skuData,
       item.classicOrCustomized,
       item.availableWebsites.join(' - '),
       ...item.changingArr,
-      item.otherItem,
-      item.rowNumber,
-      '',
-    ])
+    ]
+    if (item.otherItem !== undefined) {
+      obj.push(item.otherItem)
+    }
+    obj.push(item.rowNumber)
+    obj.push('')
+    outputData.push(obj)
   }
   currentSheet.clear({ formatOnly: true, contentsOnly: true });
   currentSheet.getRange(1, 1, collabsSortData.length + 1, titleList.length).setValues(outputData)
