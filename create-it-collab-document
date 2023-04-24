@@ -109,7 +109,7 @@ function getDocumentData(changingArea, currentDocsKey) {
   for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
       titleList.push(title[i].trim());
   }
-  if (otherChar) {
+  if (haveOtherItem) {
     titleList.push(title[charToNumber(otherChar)].trim());
   }
 
@@ -131,7 +131,7 @@ function getDocumentData(changingArea, currentDocsKey) {
     if (availableWebsites.length === 0) {
       errorMessages.push(abnormalString(`F${index+3}`, item6));
     }
-    const otherItem = otherChar ? item[charToNumber(otherChar)] : undefined
+    const otherItem = haveOtherItem ? item[charToNumber(otherChar)] : undefined
 
     const changingArr = [];
     for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
@@ -185,7 +185,7 @@ ${item.otherItem}` : item.otherItem
     }
   }
 
-  return { titleList, returnData }
+  return { titleList, returnData, haveOtherItem }
 }
 
 function getCollabSort () {
@@ -234,7 +234,7 @@ function runITCollabScript () {
     return;
   }
   
-  const { titleList, returnData: collabsData } = getDocumentData(changingArea, currentDocsKey);
+  const { titleList, returnData: collabsData, haveOtherItem } = getDocumentData(changingArea, currentDocsKey);
   const { collabMap, collabSortList } = getCollabSort();
   const collabsSortData = collabsData.map(item => {
     const newCollabName = collabMap[item.designCode];
@@ -270,7 +270,7 @@ ${getDate()}`);
       item.availableWebsites.join(' - '),
       ...item.changingArr,
     ]
-    if (otherChar) {
+    if (haveOtherItem) {
       obj.push(item.otherItem)
     }
     obj.push(item.rowNumber)
