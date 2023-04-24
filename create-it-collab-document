@@ -270,7 +270,7 @@ ${getDate()}`);
       item.availableWebsites.join(' - '),
       ...item.changingArr,
     ]
-    if (item.otherItem !== undefined) {
+    if (otherChar) {
       obj.push(item.otherItem)
     }
     obj.push(item.rowNumber)
