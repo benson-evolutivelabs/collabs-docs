@@ -121,8 +121,8 @@ function getDocumentData(changingArea, currentDocsKey) {
     }
     const collabName = item[4].trim();
     const skuData = item[5].trim().toUpperCase();
-    const item7 = item[6].trim();
-    const classicOrCustomized = ['Customized', 'Classic'].includes(item7) ? item7 : null; // Classic or Customized
+    const item6 = item[6].trim();
+    const classicOrCustomized = ['Customized', 'Classic'].includes(item6) ? item6 : null; // Classic or Customized
     if (classicOrCustomized === null) {
       errorMessages.push(abnormalString(`F${index+3}`, item6));
     }
