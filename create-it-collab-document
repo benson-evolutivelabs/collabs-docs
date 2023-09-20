@@ -105,7 +105,7 @@ function getDocumentData(changingArea, currentDocsKey) {
     return
   }
 
-  const titleList = [title[1].trim(), title[2].trim(), title[3].trim(), title[4].trim(), title[5].trim()];
+  const titleList = [title[2].trim(), title[3].trim(), title[4].trim(), title[5].trim(), title[6].trim()];
   for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
       titleList.push(title[i].trim());
   }
