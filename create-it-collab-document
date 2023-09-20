@@ -114,22 +114,22 @@ function getDocumentData(changingArea, currentDocsKey) {
   }
 
   const errorMessages = [];
-  const data = content.filter(item => item[1].trim()).map((item, index) => {
+  const data = content.filter(item => item[3].trim()).map((item, index) => {
     const designCode = item[3].trim().toUpperCase();
     if (!/^[A-Z]{2,3}$/.test(designCode)) {
-      errorMessages.push(abnormalString(`B${index+2}`, designCode));
+      errorMessages.push(abnormalString(`C${index+3}`, designCode));
     }
     const collabName = item[4].trim();
     const skuData = item[5].trim().toUpperCase();
-    const item5 = item[6].trim();
-    const classicOrCustomized = ['Customized', 'Classic'].includes(item5) ? item5 : null; // Classic or Customized
+    const item7 = item[6].trim();
+    const classicOrCustomized = ['Customized', 'Classic'].includes(item7) ? item7 : null; // Classic or Customized
     if (classicOrCustomized === null) {
-      errorMessages.push(abnormalString(`E${index+3}`, item5));
-    }
-    const item6 = item[7].trim();
-    const availableWebsites = item6 ? item6.split('-').map(item => item.trim().toUpperCase()).filter(item => item) : [];
-    if (availableWebsites.length === 0) {
       errorMessages.push(abnormalString(`F${index+3}`, item6));
+    }
+    const item7 = item[7].trim();
+    const availableWebsites = item7 ? item7.split('-').map(item => item.trim().toUpperCase()).filter(item => item) : [];
+    if (availableWebsites.length === 0) {
+      errorMessages.push(abnormalString(`G${index+3}`, item7));
     }
     const otherItem = haveOtherItem ? item[charToNumber(otherChar)] : undefined
 
