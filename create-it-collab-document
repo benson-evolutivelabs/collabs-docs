@@ -105,7 +105,7 @@ function getDocumentData(changingArea, currentDocsKey) {
     return
   }
 
-  const titleList = [title[1].trim(), title[2].trim(), title[3].trim(), title[4].trim(), title[5].trim()];
+  const titleList = [title[1].trim(), title[3].trim(), title[4].trim(), title[5].trim(), title[6].trim()];
   for (let i = changingAreaStartIndex ; i <= changingAreaEndIndex ; i++) {
       titleList.push(title[i].trim());
   }
@@ -115,18 +115,18 @@ function getDocumentData(changingArea, currentDocsKey) {
 
   const errorMessages = [];
   const data = content.filter(item => item[1].trim()).map((item, index) => {
-    const designCode = item[2].trim().toUpperCase();
+    const designCode = item[3].trim().toUpperCase();
     if (!/^[A-Z]{2,3}$/.test(designCode)) {
       errorMessages.push(abnormalString(`B${index+2}`, designCode));
     }
-    const collabName = item[3].trim();
-    const skuData = item[4].trim().toUpperCase();
-    const item5 = item[5].trim();
+    const collabName = item[4].trim();
+    const skuData = item[5].trim().toUpperCase();
+    const item5 = item[6].trim();
     const classicOrCustomized = ['Customized', 'Classic'].includes(item5) ? item5 : null; // Classic or Customized
     if (classicOrCustomized === null) {
       errorMessages.push(abnormalString(`E${index+3}`, item5));
     }
-    const item6 = item[6].trim();
+    const item6 = item[7].trim();
     const availableWebsites = item6 ? item6.split('-').map(item => item.trim().toUpperCase()).filter(item => item) : [];
     if (availableWebsites.length === 0) {
       errorMessages.push(abnormalString(`F${index+3}`, item6));
